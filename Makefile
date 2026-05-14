@@ -1,0 +1,31 @@
+.PHONY: run test-service-one GoBe-K03
+
+# make run
+run:
+	go run cmd/api/main.go
+
+# make test-service-one t=<Name of function to test>
+test-service-one:
+	go test -v -cover -run $(t) ./internal/service
+# make test-service-all
+test-service-all:
+	go test -v -cover ./internal/service/...
+# make mock-one name=<service-interface-name> file=<go-filename-for-mock>
+mock-one:
+	cd internal/service && \
+	mockery --name $(name) --filename $(file) --output ./mocks
+# make mock-service-all
+mock-service-all:
+	go generate ./internal/service
+# make test-handler-one t=<Name of function to test>
+test-handler-one:
+	go test -v -cover -run $(t) ./internal/handler
+# make test-handler-all
+test-handler-all:
+	go test -v -cover ./internal/handler/...
+# make test-endpoint-one t=<Name of function to test>
+test-endpoint-one:
+	go test -v -cover -run $(t) ./internal/test/endpoint
+# make test-endpoint-all
+test-endpoint-all:
+	go test -v -cover ./internal/test/endpoint/...
