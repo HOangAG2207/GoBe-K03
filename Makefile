@@ -23,3 +23,9 @@ test-handler-one:
 # make test-handler-all
 test-handler-all:
 	go test -v -cover ./internal/handler/...
+# make test-endpoint-one t=<Name of function to test>
+test-endpoint-one:
+	go test -v -cover -run $(t) ./internal/test/endpoint
+# make test-endpoint-all
+test-endpoint-all:
+	go test -v -cover ./internal/test/endpoint/...
