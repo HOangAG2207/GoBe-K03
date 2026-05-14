@@ -41,7 +41,8 @@ func TestEndpoint_GeneratePassword(t *testing.T) {
 			t.Parallel()
 
 			// ===== init real engine (full stack) =====
-			engine := config.NewEngine()
+			cfg := config.Load()
+			engine := config.NewEngine(cfg)
 
 			// ===== execute request =====
 			rec := tc.setupTestHttp(engine)

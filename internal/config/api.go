@@ -25,10 +25,11 @@ type Engine interface {
 type engine struct {
 	// app is the Echo instance used to handle HTTP requests
 	app *echo.Echo
+	cfg *Config
 }
 
 // NewEngine initializes and configures the application
-func NewEngine() Engine {
+func NewEngine(cfg *Config) Engine {
 
 	// ===== 1. Initialize Echo instance =====
 	app := echo.New()
@@ -50,6 +51,7 @@ func NewEngine() Engine {
 	// ===== 3. Create engine instance =====
 	e := &engine{
 		app: app,
+		cfg: cfg,
 	}
 
 	// ===== 4. Initialize routes =====
@@ -64,7 +66,7 @@ func (e *engine) Start() error {
 	// ===== 1. Define server port =====
 
 	// Default port (can be replaced by config/env)
-	port := "8080"
+	port := e.cfg.App.Port
 
 	// Ensure port has ":" prefix (required by Echo)
 	if port[0] != ':' {
