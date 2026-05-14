@@ -17,3 +17,9 @@ mock-one:
 # make mock-service-all
 mock-service-all:
 	go generate ./internal/service
+# make test-handler-one t=<Name of function to test>
+test-handler-one:
+	go test -v -cover -run $(t) ./internal/handler
+# make test-handler-all
+test-handler-all:
+	go test -v -cover ./internal/handler/...
