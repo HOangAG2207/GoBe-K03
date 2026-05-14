@@ -14,6 +14,8 @@ import (
 const defaultCharset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 // GenPassword defines the contract for password generation
+//
+//go:generate mockery --name GenPassword --filename gen_password_mock.go --output ./mocks
 type GenPassword interface {
 	// GeneratePassword generates a random password with the given length
 	// Input:
@@ -48,12 +50,6 @@ func (s *genPasswordService) GeneratePassword(length int) (string, error) {
 	if length <= 0 {
 		return "", errors.New("length must be greater than 0")
 	}
-
-	// charset must not be empty
-	if len(s.charset) == 0 {
-		return "", errors.New("charset is empty")
-	}
-
 	// ===== 2. Prepare data =====
 
 	// max defines the upper bound for random index generation
@@ -65,7 +61,7 @@ func (s *genPasswordService) GeneratePassword(length int) (string, error) {
 
 	// ===== 3. Generate characters =====
 
-	for i := 0; i < length; i++ {
+	for i := range length {
 
 		// generate a secure random index
 		idx, err := rand.Int(rand.Reader, max)

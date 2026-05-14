@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/HOangAG2207/GoBe-K03/internal/route"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,12 @@ import (
 type Engine interface {
 	// Start runs the HTTP server
 	Start() error
+	// ServeHTTP allows the engine to handle HTTP requests.
+	// It satisfies the http.Handler interface.
+	// Parameters:
+	//   - w: The http.ResponseWriter to write the response
+	//   - r: The incoming http.Request to be handled
+	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 // engine is the concrete implementation of Engine
@@ -65,7 +72,6 @@ func (e *engine) Start() error {
 	}
 
 	// ===== 2. Start server =====
-
 	log.Printf("Server running at %s\n", port)
 
 	// Start Echo server
@@ -76,4 +82,7 @@ func (e *engine) Start() error {
 func (e *engine) InitRoutes() {
 	// Group API routes under /api prefix
 	route.RegisterRoutes(e.app)
+}
+func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	e.app.ServeHTTP(w, r)
 }
