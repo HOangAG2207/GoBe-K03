@@ -4,7 +4,7 @@ package service
 import "github.com/google/uuid"
 
 type HealthCheck interface {
-	CheckHealth() healthCheckResponse
+	CheckHealth() HealthCheckResponse
 }
 
 type healthCheckService struct {
@@ -12,7 +12,7 @@ type healthCheckService struct {
 	instanceID  string
 }
 
-type healthCheckResponse struct {
+type HealthCheckResponse struct {
 	Message     string `json:"message"`
 	ServiceName string `json:"service_name"`
 	InstanceID  string `json:"instance_id"`
@@ -24,13 +24,13 @@ func NewHealthCheck(serviceName, instanceID string) HealthCheck {
 		instanceID:  instanceID,
 	}
 }
-func (h *healthCheckService) CheckHealth() healthCheckResponse {
+func (h *healthCheckService) CheckHealth() HealthCheckResponse {
 	instanceID := h.instanceID
 
 	if instanceID == "" {
 		instanceID = uuid.New().String()
 	}
-	return healthCheckResponse{
+	return HealthCheckResponse{
 		Message:     "OK",
 		ServiceName: h.serviceName,
 		InstanceID:  instanceID,
