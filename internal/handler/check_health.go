@@ -26,8 +26,15 @@ func NewHealthCheck(s service.HealthCheck) HealthCheck {
 	}
 }
 
-// CheckHealth handles the HTTP request for health check endpoint
-// It calls the service layer, gets the result, and returns JSON response
+// CheckHealth godoc
+// @Summary Health check service
+// @Description Returns the health status of the service along with service name and instance ID.
+// @Description If instance ID is not provided at startup, a new UUID will be generated automatically.
+// @Tags health check
+// @Accept json
+// @Produce json
+// @Success 200 {object} service.HealthCheckResponse "Service is healthy"
+// @Router /api/health-check [get]
 func (h *healthCheckHandler) CheckHealth(c echo.Context) error {
 	// Call service layer to get health status
 	res := h.service.CheckHealth()

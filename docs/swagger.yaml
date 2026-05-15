@@ -1,0 +1,79 @@
+basePath: /
+definitions:
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.GenPasswordResponse:
+    properties:
+      password:
+        type: string
+    type: object
+  service.HealthCheckResponse:
+    properties:
+      instance_id:
+        description: unique instance identifier
+        type: string
+      message:
+        description: status message (e.g., "OK")
+        type: string
+      service_name:
+        description: name of the service
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is an API for the GoBe-K03 application.
+  termsOfService: http://swagger.io/terms/
+  title: GoBe-K03 API
+  version: "1.0"
+paths:
+  /api/gen-password:
+    get:
+      consumes:
+      - application/json
+      description: Generate a random password with optional custom length. If length
+        is not provided, default is 12.
+      parameters:
+      - description: Password length (must be > 0, default = 12)
+        in: query
+        name: length
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password generated successfully
+          schema:
+            $ref: '#/definitions/handler.GenPasswordResponse'
+        "400":
+          description: Invalid length parameter
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Generate random password
+      tags:
+      - password generation
+  /api/health-check:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Returns the health status of the service along with service name and instance ID.
+        If instance ID is not provided at startup, a new UUID will be generated automatically.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service is healthy
+          schema:
+            $ref: '#/definitions/service.HealthCheckResponse'
+      summary: Health check service
+      tags:
+      - health check
+swagger: "2.0"

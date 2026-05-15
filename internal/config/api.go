@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/HOangAG2207/GoBe-K03/docs"
 	"github.com/HOangAG2207/GoBe-K03/internal/route"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // Engine defines the contract for starting the application
@@ -85,6 +87,7 @@ func (e *engine) InitRoutes() {
 		ServiceName: e.cfg.App.ServiceName,
 		InstanceID:  e.cfg.App.InstanceID,
 	})
+	e.app.GET("/swagger/*", echoSwagger.WrapHandler)
 }
 func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	e.app.ServeHTTP(w, r)

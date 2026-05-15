@@ -3,7 +3,8 @@
 # make run
 run:
 	go run cmd/api/main.go
-	
+swagger:
+	swag init -g cmd/api/main.go
 # make test-unit-one t=<Name of function to test> path=<package-path>(e.g., ./internal/service)
 GO-TEST-ARGS := go test -v -cover
 test-unit-one:

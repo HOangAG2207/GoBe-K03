@@ -1,0 +1,115 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API for the GoBe-K03 application.",
+        "title": "GoBe-K03 API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/gen-password": {
+            "get": {
+                "description": "Generate a random password with optional custom length. If length is not provided, default is 12.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "password generation"
+                ],
+                "summary": "Generate random password",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Password length (must be \u003e 0, default = 12)",
+                        "name": "length",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password generated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/handler.GenPasswordResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid length parameter",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/health-check": {
+            "get": {
+                "description": "Returns the health status of the service along with service name and instance ID.\nIf instance ID is not provided at startup, a new UUID will be generated automatically.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health check"
+                ],
+                "summary": "Health check service",
+                "responses": {
+                    "200": {
+                        "description": "Service is healthy",
+                        "schema": {
+                            "$ref": "#/definitions/service.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.GenPasswordResponse": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "instance_id": {
+                    "description": "unique instance identifier",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "status message (e.g., \"OK\")",
+                    "type": "string"
+                },
+                "service_name": {
+                    "description": "name of the service",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
