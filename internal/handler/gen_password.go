@@ -55,7 +55,17 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// GeneratePassword handles HTTP request for password generation
+// GeneratePassword generates a password.
+// @Summary Generate random password
+// @Description Generate a random password with optional custom length. If length is not provided, default is 12.
+// @Tags password generation
+// @Accept json
+// @Produce json
+// @Param length query int false "Password length (must be > 0, default = 12)"
+// @Success 200 {object} GenPasswordResponse "Password generated successfully"
+// @Failure 400 {object} ErrorResponse "Invalid length parameter"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/gen-password [get]
 func (h *genPasswordHandler) GeneratePassword(c echo.Context) error {
 
 	// ===== 1. Determine password length =====
