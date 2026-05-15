@@ -1,31 +1,33 @@
-.PHONY: run test-service-one GoBe-K03
+.PHONY: run test-unit-one test-unit-all test-endpoint-one test-endpoint-all mock-service-one mock-service-all
 
 # make run
 run:
 	go run cmd/api/main.go
+	
+# make test-unit-one t=<Name of function to test> path=<package-path>(e.g., ./internal/service)
+GO-TEST-ARGS := go test -v -cover
+test-unit-one:
+	$(if $(t),,$(error missing t))
+	$(if $(path),,$(error missing path))
+	$(GO-TEST-ARGS) -run $(t) $(path)
+# make test-unit-all path=<package-path>(e.g., ./internal/service/...)
+test-unit-all:
+	$(if $(path),,$(error missing path))
+	$(GO-TEST-ARGS) $(path)
+	
+# make test-endpoint-one t=<Name of function to test>
+PATH-TEST-ENDPOINT := ./internal/test/endpoint
+test-endpoint-one:
+	$(if $(t),,$(error missing t))
+	$(GO-TEST-ARGS) -run $(t) $(PATH-TEST-ENDPOINT)
+# make test-endpoint-all
+test-endpoint-all:
+	$(GO-TEST-ARGS) $(PATH-TEST-ENDPOINT)/...
 
-# make test-service-one t=<Name of function to test>
-test-service-one:
-	go test -v -cover -run $(t) ./internal/service
-# make test-service-all
-test-service-all:
-	go test -v -cover ./internal/service/...
 # make mock-one name=<service-interface-name> file=<go-filename-for-mock>
-mock-one:
+mock-service-one:
 	cd internal/service && \
 	mockery --name $(name) --filename $(file) --output ./mocks
 # make mock-service-all
 mock-service-all:
 	go generate ./internal/service
-# make test-handler-one t=<Name of function to test>
-test-handler-one:
-	go test -v -cover -run $(t) ./internal/handler
-# make test-handler-all
-test-handler-all:
-	go test -v -cover ./internal/handler/...
-# make test-endpoint-one t=<Name of function to test>
-test-endpoint-one:
-	go test -v -cover -run $(t) ./internal/test/endpoint
-# make test-endpoint-all
-test-endpoint-all:
-	go test -v -cover ./internal/test/endpoint/...

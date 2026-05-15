@@ -1,3 +1,4 @@
+// internal/config/api.go
 package config
 
 import (
@@ -64,10 +65,7 @@ func NewEngine(cfg *Config) Engine {
 func (e *engine) Start() error {
 
 	// ===== 1. Define server port =====
-
-	// Default port (can be replaced by config/env)
 	port := e.cfg.App.Port
-
 	// Ensure port has ":" prefix (required by Echo)
 	if port[0] != ':' {
 		port = ":" + port
@@ -83,7 +81,10 @@ func (e *engine) Start() error {
 // InitRoutes registers all application routes
 func (e *engine) InitRoutes() {
 	// Group API routes under /api prefix
-	route.RegisterRoutes(e.app)
+	route.RegisterRoutes(e.app, route.AppConfig{
+		ServiceName: e.cfg.App.ServiceName,
+		InstanceID:  e.cfg.App.InstanceID,
+	})
 }
 func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	e.app.ServeHTTP(w, r)

@@ -14,8 +14,7 @@ import (
 const defaultCharset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 // GenPassword defines the contract for password generation
-//
-//go:generate mockery --name GenPassword --filename gen_password_mock.go --output ./mocks
+
 type GenPassword interface {
 	// GeneratePassword generates a random password with the given length
 	// Input:
