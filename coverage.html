@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>config: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/HOangAG2207/GoBe-K03/internal/config/api.go (66.7%)</option>
+				
+				<option value="file1">github.com/HOangAG2207/GoBe-K03/internal/config/config.go (78.3%)</option>
+				
+				<option value="file2">github.com/HOangAG2207/GoBe-K03/internal/handler/check_health.go (100.0%)</option>
+				
+				<option value="file3">github.com/HOangAG2207/GoBe-K03/internal/handler/gen_password.go (100.0%)</option>
+				
+				<option value="file4">github.com/HOangAG2207/GoBe-K03/internal/route/check_health.go (100.0%)</option>
+				
+				<option value="file5">github.com/HOangAG2207/GoBe-K03/internal/route/gen_password.go (100.0%)</option>
+				
+				<option value="file6">github.com/HOangAG2207/GoBe-K03/internal/route/router.go (100.0%)</option>
+				
+				<option value="file7">github.com/HOangAG2207/GoBe-K03/internal/service/check_health.go (100.0%)</option>
+				
+				<option value="file8">github.com/HOangAG2207/GoBe-K03/internal/service/gen_password.go (90.9%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// internal/config/api.go
+package config
+
+import (
+        "log"
+        "net/http"
+
+        _ "github.com/HOangAG2207/GoBe-K03/docs"
+        "github.com/HOangAG2207/GoBe-K03/internal/route"
+        "github.com/labstack/echo/v4"
+        "github.com/labstack/echo/v4/middleware"
+        echoSwagger "github.com/swaggo/echo-swagger"
+)
+
+// Engine defines the contract for starting the application
+type Engine interface {
+        // Start runs the HTTP server
+        Start() error
+        // ServeHTTP allows the engine to handle HTTP requests.
+        // It satisfies the http.Handler interface.
+        // Parameters:
+        //   - w: The http.ResponseWriter to write the response
+        //   - r: The incoming http.Request to be handled
+        ServeHTTP(w http.ResponseWriter, r *http.Request)
+}
+
+// engine is the concrete implementation of Engine
+type engine struct {
+        // app is the Echo instance used to handle HTTP requests
+        app *echo.Echo
+        cfg *Config
+}
+
+// NewEngine initializes and configures the application
+func NewEngine(cfg *Config) Engine <span class="cov10" title="2">{
+
+        // ===== 1. Initialize Echo instance =====
+        app := echo.New()
+
+        // ===== 2. Register middlewares =====
+
+        // Enable CORS for all origins
+        // Note: In production, you should restrict allowed origins
+        app.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+                AllowOrigins: []string{"*"},
+        }))
+
+        // Log incoming HTTP requests
+        app.Use(middleware.RequestLogger())
+
+        // Recover from panics and prevent server crash
+        app.Use(middleware.Recover())
+
+        // ===== 3. Create engine instance =====
+        e := &amp;engine{
+                app: app,
+                cfg: cfg,
+        }
+
+        // ===== 4. Initialize routes =====
+        e.InitRoutes()
+
+        return e
+}</span>
+
+// Start runs the HTTP server
+func (e *engine) Start() error <span class="cov0" title="0">{
+
+        // ===== 1. Define server port =====
+        port := e.cfg.App.Port
+        // Ensure port has ":" prefix (required by Echo)
+        if port[0] != ':' </span><span class="cov0" title="0">{
+                port = ":" + port
+        }</span>
+
+        // ===== 2. Start server =====
+        <span class="cov0" title="0">log.Printf("Server running at %s\n", port)
+
+        // Start Echo server
+        return e.app.Start(port)</span>
+}
+
+// InitRoutes registers all application routes
+func (e *engine) InitRoutes() <span class="cov10" title="2">{
+        // Group API routes under /api prefix
+        route.RegisterRoutes(e.app, route.AppConfig{
+                ServiceName: e.cfg.App.ServiceName,
+                InstanceID:  e.cfg.App.InstanceID,
+        })
+        e.app.GET("/docs/*", echoSwagger.WrapHandler)
+}</span>
+func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) <span class="cov10" title="2">{
+        e.app.ServeHTTP(w, r)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package config
+
+import (
+        "log"
+        "os"
+        "path/filepath"
+        "strings"
+
+        "github.com/spf13/viper"
+)
+
+// ===== Config structs =====
+
+type Config struct {
+        App AppConfig `mapstructure:"app"`
+}
+
+type AppConfig struct {
+        Port        string `mapstructure:"port"`
+        ServiceName string `mapstructure:"service_name"`
+        InstanceID  string `mapstructure:"instance_id"`
+}
+
+// ===== Load config =====
+
+func Load() *Config <span class="cov4" title="2">{
+        v := viper.New()
+
+        // Load .env
+        v.SetConfigFile(findEnvFile())
+        v.SetConfigType("env")
+
+        // Hỗ trợ ENV: APP.PORT ↔ APP_PORT
+        v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+        v.AutomaticEnv()
+
+        if err := v.ReadInConfig(); err != nil </span><span class="cov0" title="0">{
+                log.Printf("skip .env: %v", err)
+        }</span>
+
+        // Default values
+        // v.SetDefault("app.port", "8080")
+
+        <span class="cov4" title="2">var cfg Config
+        if err := v.Unmarshal(&amp;cfg); err != nil </span><span class="cov0" title="0">{
+                log.Fatalf("cannot parse config: %v", err)
+        }</span>
+
+        <span class="cov4" title="2">return &amp;cfg</span>
+}
+
+// ===== Find .env =====
+
+func findEnvFile() string <span class="cov4" title="2">{
+        dir, err := os.Getwd()
+        if err != nil </span><span class="cov0" title="0">{
+                return ".env"
+        }</span>
+
+        <span class="cov4" title="2">for </span><span class="cov10" title="8">{
+                path := filepath.Join(dir, ".env")
+                if _, err := os.Stat(path); err == nil </span><span class="cov4" title="2">{
+                        return path
+                }</span>
+
+                <span class="cov8" title="6">parent := filepath.Dir(dir)
+                if parent == dir </span><span class="cov0" title="0">{
+                        break</span>
+                }
+                <span class="cov8" title="6">dir = parent</span>
+        }
+
+        <span class="cov0" title="0">return ".env"</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handler
+
+import (
+        "net/http"
+
+        "github.com/HOangAG2207/GoBe-K03/internal/service"
+        "github.com/labstack/echo/v4"
+)
+
+// HealthCheck defines the handler interface for health check endpoint
+type HealthCheck interface {
+        CheckHealth(c echo.Context) error
+}
+
+// healthCheckHandler implements HealthCheck interface
+// It depends on service layer to get health information
+type healthCheckHandler struct {
+        service service.HealthCheck
+}
+
+// NewHealthCheck creates a new instance of HealthCheck handler
+// using dependency injection for the service layer
+func NewHealthCheck(s service.HealthCheck) HealthCheck <span class="cov10" title="3">{
+        return &amp;healthCheckHandler{
+                service: s,
+        }
+}</span>
+
+// CheckHealth godoc
+// @Summary Health check service
+// @Description Returns the health status of the service along with service name and instance ID.
+// @Description If instance ID is not provided at startup, a new UUID will be generated automatically.
+// @Tags health check
+// @Accept json
+// @Produce json
+// @Success 200 {object} service.HealthCheckResponse "Service is healthy"
+// @Router /api/health-check [get]
+func (h *healthCheckHandler) CheckHealth(c echo.Context) error <span class="cov6" title="2">{
+        // Call service layer to get health status
+        res := h.service.CheckHealth()
+
+        // Return HTTP 200 with JSON response
+        return c.JSON(http.StatusOK, res)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handler
+
+import (
+        "net/http"
+        "strconv"
+
+        "github.com/HOangAG2207/GoBe-K03/internal/service"
+        "github.com/labstack/echo/v4"
+)
+
+// defaultPasswordLength defines the fallback password length
+// used when the client does not provide a custom length
+const defaultPasswordLength = 12
+
+// GenPassword defines the contract for password HTTP handler
+type GenPassword interface {
+        // GeneratePassword handles HTTP request to generate password
+        // Input:
+        //   - ectx: echo context containing request/response data
+        // Output:
+        //   - error: returned if request handling fails
+        GeneratePassword(ectx echo.Context) error
+}
+
+// genPasswordHandler is the concrete implementation of GenPassword
+type genPasswordHandler struct {
+        // genPasswordService is the dependency from service layer
+        // responsible for generating passwords
+        genPasswordService service.GenPassword
+}
+
+// NewGenPassword creates a new handler instance
+// Input:
+//   - svc: password generation service
+//
+// Output:
+//   - GenPassword: handler interface
+func NewGenPassword(svc service.GenPassword) GenPassword <span class="cov10" title="6">{
+        return &amp;genPasswordHandler{
+                genPasswordService: svc,
+        }
+}</span>
+
+// ===== Response DTO =====
+
+// GenPasswordResponse represents success response
+// Returned when password is generated successfully
+type GenPasswordResponse struct {
+        Password string `json:"password"`
+}
+
+// ErrorResponse represents error response
+// Used for returning error messages to client
+type ErrorResponse struct {
+        Error string `json:"error"`
+}
+
+// GeneratePassword generates a password.
+// @Summary Generate random password
+// @Description Generate a random password with optional custom length. If length is not provided, default is 12.
+// @Tags password generation
+// @Accept json
+// @Produce json
+// @Param length query int false "Password length (must be &gt; 0, default = 12)"
+// @Success 200 {object} GenPasswordResponse "Password generated successfully"
+// @Failure 400 {object} ErrorResponse "Invalid length parameter"
+// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Router /api/gen-password [get]
+func (h *genPasswordHandler) GeneratePassword(c echo.Context) error <span class="cov9" title="5">{
+
+        // ===== 1. Determine password length =====
+
+        // default length is used if no query param is provided
+        length := defaultPasswordLength
+
+        // check if client provides "length" query parameter
+        if l := c.QueryParam("length"); l != "" </span><span class="cov6" title="3">{
+
+                // convert string to integer
+                parsed, err := strconv.Atoi(l)
+
+                // validate:
+                // - must be a number
+                // - must be greater than 0
+                if err != nil || parsed &lt;= 0 </span><span class="cov1" title="1">{
+                        return c.JSON(http.StatusBadRequest, ErrorResponse{
+                                Error: "invalid length",
+                        })
+                }</span>
+
+                // override default length
+                <span class="cov4" title="2">length = parsed</span>
+        }
+
+        // ===== 2. Call service layer =====
+
+        // generate password using service
+        <span class="cov7" title="4">pass, err := h.genPasswordService.GeneratePassword(length)
+        if err != nil </span><span class="cov1" title="1">{
+
+                // return generic error to avoid leaking internal details
+                return c.JSON(http.StatusInternalServerError, ErrorResponse{
+                        Error: "Internal Server Error",
+                })
+        }</span>
+
+        // ===== 3. Return success response =====
+
+        <span class="cov6" title="3">return c.JSON(http.StatusOK, GenPasswordResponse{
+                Password: pass,
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// internal/route/check_health.go
+package route
+
+import (
+        "github.com/HOangAG2207/GoBe-K03/internal/handler"
+        "github.com/HOangAG2207/GoBe-K03/internal/service"
+        "github.com/labstack/echo/v4"
+)
+
+// RegisterHealthRoutes groups all health-related endpoints
+func RegisterHealthRoutes(egr *echo.Group, cfg AppConfig) <span class="cov10" title="2">{
+
+        // ===== Dependencies =====
+        healthService := service.NewHealthCheck(cfg.ServiceName, cfg.InstanceID)
+        healthHandler := handler.NewHealthCheck(healthService)
+
+        // ===== Routes =====
+        egr.GET("/health-check", healthHandler.CheckHealth)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package route
+
+import (
+        "github.com/HOangAG2207/GoBe-K03/internal/handler"
+        "github.com/HOangAG2207/GoBe-K03/internal/service"
+        "github.com/labstack/echo/v4"
+)
+
+// RegisterPasswordRoutes groups all password-related endpoints
+func RegisterPasswordRoutes(api *echo.Group) <span class="cov10" title="2">{
+
+        // ===== Dependencies =====
+        passwordService := service.NewGenPassword()
+        passwordHandler := handler.NewGenPassword(passwordService)
+
+        // ===== Routes =====
+        api.GET("/gen-password", passwordHandler.GeneratePassword)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">// internal/route/router.go
+package route
+
+import (
+        "github.com/labstack/echo/v4"
+)
+
+type AppConfig struct {
+        ServiceName string
+        InstanceID  string
+        // thêm biến khác ở đây...
+}
+
+// RegisterRoutes is the central place to manage all routes
+func RegisterRoutes(e *echo.Echo, cfg AppConfig) <span class="cov10" title="2">{
+
+        api := e.Group("/api")
+        // ===== Register Health modules =====
+        RegisterHealthRoutes(api, cfg)
+        // ===== Register Password modules =====
+        RegisterPasswordRoutes(api)
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// service/check_health.go
+package service
+
+import "github.com/google/uuid"
+
+// HealthCheck defines the contract for health check business logic
+type HealthCheck interface {
+        CheckHealth() HealthCheckResponse
+}
+
+// healthCheckService implements HealthCheck interface
+// It holds service metadata such as service name and instance ID
+type healthCheckService struct {
+        serviceName string
+        instanceID  string
+}
+
+// HealthCheckResponse represents the response returned by the health check API
+type HealthCheckResponse struct {
+        Message     string `json:"message"`      // status message (e.g., "OK")
+        ServiceName string `json:"service_name"` // name of the service
+        InstanceID  string `json:"instance_id"`  // unique instance identifier
+}
+
+// NewHealthCheck creates a new HealthCheck service instance
+// It supports dependency injection of service name and instance ID
+func NewHealthCheck(serviceName, instanceID string) HealthCheck <span class="cov10" title="4">{
+        return &amp;healthCheckService{
+                serviceName: serviceName,
+                instanceID:  instanceID,
+        }
+}</span>
+
+// CheckHealth returns the health status of the service
+// It ensures that an instance ID always exists (generates UUID if missing)
+func (h *healthCheckService) CheckHealth() HealthCheckResponse <span class="cov8" title="3">{
+        instanceID := h.instanceID
+
+        // Generate a new UUID if instanceID is not provided
+        if instanceID == "" </span><span class="cov5" title="2">{
+                instanceID = uuid.New().String()
+        }</span>
+
+        // Return standardized health check response
+        <span class="cov8" title="3">return HealthCheckResponse{
+                Message:     "OK",
+                ServiceName: h.serviceName,
+                InstanceID:  instanceID,
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package service
+
+import (
+        "crypto/rand"
+        "errors"
+        "math/big"
+)
+
+// defaultCharset defines the set of characters used for password generation.
+// It includes:
+// - lowercase letters (a-z)
+// - uppercase letters (A-Z)
+// - digits (0-9)
+const defaultCharset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+// GenPassword defines the contract for password generation
+
+type GenPassword interface {
+        // GeneratePassword generates a random password with the given length
+        // Input:
+        //   - length: desired password length
+        // Output:
+        //   - string: generated password
+        //   - error: returned if generation fails
+        GeneratePassword(length int) (string, error)
+}
+
+// genPasswordService is the concrete implementation of GenPassword
+type genPasswordService struct {
+        // charset is the pool of characters used to build the password
+        charset string
+}
+
+// NewGenPassword initializes the password generator service
+// Return:
+//   - GenPassword: interface for external usage
+func NewGenPassword() GenPassword <span class="cov3" title="3">{
+        return &amp;genPasswordService{
+                charset: defaultCharset,
+        }
+}</span>
+
+// GeneratePassword generates a random password
+func (s *genPasswordService) GeneratePassword(length int) (string, error) <span class="cov4" title="6">{
+
+        // ===== 1. Validate input =====
+
+        // length must be greater than 0
+        if length &lt;= 0 </span><span class="cov2" title="2">{
+                return "", errors.New("length must be greater than 0")
+        }</span>
+        // ===== 2. Prepare data =====
+
+        // max defines the upper bound for random index generation
+        // rand.Int generates a number in range [0, max)
+        <span class="cov3" title="4">max := big.NewInt(int64(len(s.charset)))
+
+        // allocate byte slice for password
+        password := make([]byte, length)
+
+        // ===== 3. Generate characters =====
+
+        for i := range length </span><span class="cov10" title="68">{
+
+                // generate a secure random index
+                idx, err := rand.Int(rand.Reader, max)
+                if err != nil </span><span class="cov0" title="0">{
+                        // return immediately if crypto random fails
+                        return "", err
+                }</span>
+
+                // map index to character in charset
+                <span class="cov10" title="68">password[i] = s.charset[idx.Int64()]</span>
+        }
+
+        // ===== 4. Convert &amp; return =====
+
+        // convert byte slice to string and return
+        <span class="cov3" title="4">return string(password), nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

@@ -1,12 +1,11 @@
-.PHONY: run test-unit-one test-unit-all test-endpoint-one test-endpoint-all mock-service-one mock-service-all
-
+.PHONY: run swagger test-unit-one test-unit-all test-endpoint-one test-endpoint-all mock-service-one mock-service-all test-code-coverage
 # make run
 run:
 	go run cmd/api/main.go
 swagger:
 	swag init -g cmd/api/main.go
 # make test-unit-one t=<Name of function to test> path=<package-path>(e.g., ./internal/service)
-GO-TEST-ARGS := go test -v -cover
+GO-TEST-ARGS:=go test -v -cover
 test-unit-one:
 	$(if $(t),,$(error missing t))
 	$(if $(path),,$(error missing path))
@@ -17,7 +16,7 @@ test-unit-all:
 	$(GO-TEST-ARGS) $(path)
 	
 # make test-endpoint-one t=<Name of function to test>
-PATH-TEST-ENDPOINT := ./internal/test/endpoint
+PATH-TEST-ENDPOINT:=./internal/test/endpoint
 test-endpoint-one:
 	$(if $(t),,$(error missing t))
 	$(GO-TEST-ARGS) -run $(t) $(PATH-TEST-ENDPOINT)
@@ -25,8 +24,16 @@ test-endpoint-one:
 test-endpoint-all:
 	$(GO-TEST-ARGS) $(PATH-TEST-ENDPOINT)/...
 
+# make test-code-coverage
+test-code-coverage:
+	go test ./... -coverprofile=coverage.tmp -covermode=atomic -coverpkg=./... -p 1
+	go run filter_coverage.go
+	go tool cover -html=coverage.out -o coverage.html
+
 # make mock-one name=<service-interface-name> file=<go-filename-for-mock>
 mock-service-one:
+	$(if $(name),,$(error missing name))
+	$(if $(file),,$(error missing file))
 	cd internal/service && \
 	mockery --name $(name) --filename $(file) --output ./mocks
 # make mock-service-all
