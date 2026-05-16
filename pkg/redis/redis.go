@@ -35,7 +35,7 @@ func NewRedisClient(cfg config.RedisConfig, dbOverride *int, prefixOverride *str
 	}
 
 	// Build Redis address (host:port)
-	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 
 	// Create Redis client with given configuration
 	rdb := redis.NewClient(&redis.Options{
