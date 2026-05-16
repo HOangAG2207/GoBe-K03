@@ -12,13 +12,22 @@ import (
 // ===== Config structs =====
 
 type Config struct {
-	App AppConfig `mapstructure:"app"`
+	App   AppConfig   `mapstructure:"app"`
+	Redis RedisConfig `mapstructure:"redis"`
 }
 
 type AppConfig struct {
 	Port        string `mapstructure:"port"`
 	ServiceName string `mapstructure:"service_name"`
 	InstanceID  string `mapstructure:"instance_id"`
+}
+
+type RedisConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Password string `mapstructure:"password"`
+	DB       int    `mapstructure:"db"`
+	Prefix   string `mapstructure:"prefix"`
 }
 
 // ===== Load config =====
