@@ -87,7 +87,7 @@ func (e *engine) InitRoutes() {
 		ServiceName: e.cfg.App.ServiceName,
 		InstanceID:  e.cfg.App.InstanceID,
 	})
-	e.app.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.app.GET("/docs/*", echoSwagger.WrapHandler)
 }
 func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	e.app.ServeHTTP(w, r)
