@@ -7,35 +7,48 @@ import (
 
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
 	"github.com/HOangAG2207/GoBe-K03/internal/repository"
-	"github.com/HOangAG2207/GoBe-K03/pkg/redis"
+	redisPkg "github.com/HOangAG2207/GoBe-K03/pkg/redis"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// ===== LOAD CONFIG =====
 	cfg := config.Load()
 
 	// ===== INIT REDIS =====
-	rdb := redis.NewRedisClient(cfg.Redis, nil)
+	rdb, err := redisPkg.NewRedisClient(cfg.Redis, nil)
+	if err != nil {
+		log.Fatalf("failed to init redis: %v", err)
+	}
+
+	// (optional nhưng nên có)
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		log.Fatalf("redis not connected: %v", err)
+	}
+
+	defer func() {
+		if err := rdb.Close(); err != nil {
+			log.Println("redis close error:", err)
+		}
+	}()
 
 	// ===== INIT REPOSITORY =====
-	urlRepo := repository.NewURLStorage(rdb)
+	urlRepo := repository.NewUrlStorage(rdb)
 
 	// ===== USE CASE =====
 
+	shortCode := "gg:short"
+	originalURL := "https://google.com"
+
 	// 1. Store URL
-	err := urlRepo.StoreURL(ctx, "gg:short", "https://google.com")
-	if err != nil {
+	if err := urlRepo.StoreUrl(ctx, shortCode, originalURL); err != nil {
 		log.Fatalf("store error: %v", err)
 	}
 
 	// 2. Get URL
-	url, err := urlRepo.GetURL(ctx, "gg:short")
+	url, err := urlRepo.GetUrl(ctx, shortCode)
 	if err != nil {
-		if err == repository.ErrURLNotFound {
-			log.Println("URL not found")
-			return
-		}
 		log.Fatalf("get error: %v", err)
 	}
 
