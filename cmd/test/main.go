@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
-	"github.com/HOangAG2207/GoBe-K03/internal/repository"
+	shorten_link_repository "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_link"
 	redisPkg "github.com/HOangAG2207/GoBe-K03/pkg/redis"
 )
 
@@ -34,7 +34,7 @@ func main() {
 	}()
 
 	// ===== INIT REPOSITORY =====
-	urlRepo := repository.NewUrlStorage(rdb)
+	urlRepo := shorten_link_repository.NewUrlRepository(rdb)
 
 	// ===== USE CASE =====
 

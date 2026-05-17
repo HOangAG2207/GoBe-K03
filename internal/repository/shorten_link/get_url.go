@@ -1,4 +1,4 @@
-package shorten_link_repository
+package shorten_link
 
 import "context"
 
