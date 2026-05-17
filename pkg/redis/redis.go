@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -9,35 +10,25 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Client wraps the Redis client and adds key prefix support
+// Domain errors
+var (
+	ErrKeyNotFound = errors.New("redis: key not found")
+)
+
+// Client wraps Redis client
 type Client struct {
-	rdb    *redis.Client // underlying Redis client
-	prefix string        // key prefix for namespacing
+	rdb *redis.Client
 }
 
-// NewRedisClient initializes a new Redis client instance
-// It supports overriding DB index and key prefix dynamically
-func NewRedisClient(cfg config.RedisConfig, dbOverride *int, prefixOverride *string) *Client {
-	// Use default DB from config
+// Constructor (không còn prefix)
+func NewRedisClient(cfg config.RedisConfig, dbOverride *int) *Client {
 	db := cfg.DB
-
-	// Override DB if provided
 	if dbOverride != nil {
 		db = *dbOverride
 	}
 
-	// Use default prefix from config
-	prefix := cfg.Prefix
-
-	// Override prefix if provided
-	if prefixOverride != nil {
-		prefix = *prefixOverride
-	}
-
-	// Build Redis address (host:port)
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 
-	// Create Redis client with given configuration
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: cfg.Password,
@@ -45,27 +36,37 @@ func NewRedisClient(cfg config.RedisConfig, dbOverride *int, prefixOverride *str
 	})
 
 	return &Client{
-		rdb:    rdb,
-		prefix: prefix,
+		rdb: rdb,
 	}
 }
 
-// buildKey applies prefix to the given key if prefix is set
-// Example: prefix="app" and key="user:1" -> "app:user:1"
-func (c *Client) buildKey(key string) string {
-	if c.prefix == "" {
-		return key
-	}
-	return fmt.Sprintf("%s:%s", c.prefix, key)
-}
+//
+// ===== PUBLIC METHODS =====
+//
 
-// Set stores a key-value pair in Redis with a TTL (in seconds)
-// ttlSeconds = 0 means no expiration
+// Set key with TTL (seconds)
 func (c *Client) Set(ctx context.Context, key string, value any, ttlSeconds int) error {
 	return c.rdb.Set(
 		ctx,
-		c.buildKey(key),
+		key,
 		value,
 		time.Duration(ttlSeconds)*time.Second,
 	).Err()
+}
+
+// Get value by key
+func (c *Client) Get(ctx context.Context, key string) (string, error) {
+	val, err := c.rdb.Get(ctx, key).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", ErrKeyNotFound
+		}
+		return "", err
+	}
+	return val, nil
+}
+
+// Delete key
+func (c *Client) Delete(ctx context.Context, key string) error {
+	return c.rdb.Del(ctx, key).Err()
 }

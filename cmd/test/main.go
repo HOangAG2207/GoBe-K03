@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
 
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
+	"github.com/HOangAG2207/GoBe-K03/internal/repository"
 	"github.com/HOangAG2207/GoBe-K03/pkg/redis"
 )
 
@@ -12,22 +15,29 @@ func main() {
 
 	cfg := config.Load()
 
-	// ✅ dùng default (ENV)
-	rdb0 := redis.NewRedisClient(cfg.Redis, nil, nil)
-	// set
-	_ = rdb0.Set(ctx, "user:1", "hello", 60)
+	// ===== INIT REDIS =====
+	rdb := redis.NewRedisClient(cfg.Redis, nil)
 
-	// ------------------------
+	// ===== INIT REPOSITORY =====
+	urlRepo := repository.NewURLStorage(rdb)
 
-	// ✅ override DB
-	db := 1
-	rdb1 := redis.NewRedisClient(cfg.Redis, &db, nil)
-	// set
-	_ = rdb1.Set(ctx, "user:1", "hello", 60)
+	// ===== USE CASE =====
 
-	// ✅ override prefix
-	prefix := "user"
-	rdb2 := redis.NewRedisClient(cfg.Redis, nil, &prefix)
-	// set
-	_ = rdb2.Set(ctx, "1", "hello", 60)
+	// 1. Store URL
+	err := urlRepo.StoreURL(ctx, "gg:short", "https://google.com")
+	if err != nil {
+		log.Fatalf("store error: %v", err)
+	}
+
+	// 2. Get URL
+	url, err := urlRepo.GetURL(ctx, "gg:short")
+	if err != nil {
+		if err == repository.ErrURLNotFound {
+			log.Println("URL not found")
+			return
+		}
+		log.Fatalf("get error: %v", err)
+	}
+
+	fmt.Println("Original URL:", url)
 }
