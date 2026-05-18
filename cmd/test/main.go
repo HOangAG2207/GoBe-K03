@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
 	shorten_link_repository "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_link"
+	shorten_link_service "github.com/HOangAG2207/GoBe-K03/internal/service/shorten_link"
+	"github.com/HOangAG2207/GoBe-K03/internal/utils"
 	redisPkg "github.com/HOangAG2207/GoBe-K03/pkg/redis"
 )
 
@@ -38,19 +41,10 @@ func main() {
 
 	// ===== USE CASE =====
 
-	shortCode := "gg:short"
 	originalURL := "https://google.com"
 
-	// 1. Store URL
-	if err := urlRepo.StoreUrl(ctx, shortCode, originalURL); err != nil {
-		log.Fatalf("store error: %v", err)
-	}
+	urlService := shorten_link_service.NewUrlService(urlRepo, utils.NewCodeGenerator())
 
-	// 2. Get URL
-	url, err := urlRepo.GetUrl(ctx, shortCode)
-	if err != nil {
-		log.Fatalf("get error: %v", err)
-	}
-
-	fmt.Println("Original URL:", url)
+	key, _ := urlService.ShortenURL(ctx, originalURL, time.Hour)
+	fmt.Println(key)
 }
