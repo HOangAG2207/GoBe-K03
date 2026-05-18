@@ -1,11 +1,10 @@
-package shorten_link
+package shorten_url_service
 
 import (
 	"context"
 	"errors"
-	"time"
 
-	"github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_link"
+	shorten_url "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_url"
 	"github.com/HOangAG2207/GoBe-K03/internal/utils"
 )
 
@@ -21,14 +20,14 @@ var (
 
 //go:generate mockery --name Service --filename shorten_url_mock.go --output ./mocks
 type Service interface {
-	ShortenURL(ctx context.Context, originalURL string, expireIn time.Duration) (string, error)
+	ShortenURL(ctx context.Context, originalURL string, expireIn int) (string, error)
 }
 
 type urlService struct {
-	repo               shorten_link.Repository
+	repo               shorten_url.Repository
 	randomCodeGenerate utils.CodeGenerator
 }
 
-func NewUrlService(repo shorten_link.Repository, randomCodeGenerate utils.CodeGenerator) Service {
+func NewUrlService(repo shorten_url.Repository, randomCodeGenerate utils.CodeGenerator) Service {
 	return &urlService{repo: repo, randomCodeGenerate: randomCodeGenerate}
 }

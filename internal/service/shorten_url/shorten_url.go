@@ -1,12 +1,12 @@
-package shorten_link
+package shorten_url_service
 
 import (
 	"context"
-	"time"
 )
 
-func (s *urlService) ShortenURL(ctx context.Context, originalURL string, expireIn time.Duration) (string, error) {
-	for range maxRetryAttempts {
+func (s *urlService) ShortenURL(ctx context.Context, originalURL string, expireIn int) (string, error) {
+	for i := 0; i < maxRetryAttempts; i++ {
+
 		code, err := s.randomCodeGenerate.GenerateCode(defaultUrlCodeLength)
 		if err != nil {
 			return "", err
@@ -16,9 +16,11 @@ func (s *urlService) ShortenURL(ctx context.Context, originalURL string, expireI
 		if err != nil {
 			return "", err
 		}
+
 		if stored {
 			return code, nil
 		}
 	}
+
 	return "", ErrMaxRetryExceeded
 }

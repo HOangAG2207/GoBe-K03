@@ -66,7 +66,9 @@ func TestEndpoint_CheckHealth(t *testing.T) {
 
 			// Initialize full application engine (integration test level)
 			cfg := config.Load()
-			engine := config.NewEngine(cfg)
+			engine := config.NewEngine(&config.EngineOpts{
+				Cfg: cfg,
+			})
 
 			// Execute test request
 			rec := tc.setupTestHTTP(engine)

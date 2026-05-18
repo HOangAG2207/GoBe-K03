@@ -1,4 +1,4 @@
-package shorten_link
+package shorten_url_service
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	mockRepo "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_link/mocks"
+	mockRepo "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_url/mocks"
 	mockRandomCodeGen "github.com/HOangAG2207/GoBe-K03/internal/utils/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +21,7 @@ func TestService_ShortenUrl(t *testing.T) {
 		setupMockRepo          func(ctx context.Context) *mockRepo.Repository
 
 		inputOriginalURL string
-		inputExpireIn    time.Duration
+		inputExpireIn    int
 
 		expectedCode  string
 		expectedError error
@@ -43,7 +43,7 @@ func TestService_ShortenUrl(t *testing.T) {
 			},
 
 			inputOriginalURL: "https://test.com",
-			inputExpireIn:    time.Minute,
+			inputExpireIn:    1,
 
 			expectedCode:  "abc12345",
 			expectedError: nil,
@@ -69,7 +69,7 @@ func TestService_ShortenUrl(t *testing.T) {
 			},
 
 			inputOriginalURL: "https://test.com",
-			inputExpireIn:    time.Minute,
+			inputExpireIn:    1,
 
 			expectedCode:  "newcode",
 			expectedError: nil,
@@ -88,7 +88,7 @@ func TestService_ShortenUrl(t *testing.T) {
 			},
 
 			inputOriginalURL: "https://test.com",
-			inputExpireIn:    time.Minute,
+			inputExpireIn:    1,
 
 			expectedCode:  "",
 			expectedError: errors.New("gen error"),
@@ -110,7 +110,7 @@ func TestService_ShortenUrl(t *testing.T) {
 			},
 
 			inputOriginalURL: "https://test.com",
-			inputExpireIn:    time.Minute,
+			inputExpireIn:    1,
 
 			expectedCode:  "",
 			expectedError: errors.New("repo error"),
@@ -136,7 +136,7 @@ func TestService_ShortenUrl(t *testing.T) {
 			},
 
 			inputOriginalURL: "https://test.com",
-			inputExpireIn:    time.Minute,
+			inputExpireIn:    1,
 
 			expectedCode:  "",
 			expectedError: ErrMaxRetryExceeded,
