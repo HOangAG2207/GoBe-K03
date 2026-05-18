@@ -9,6 +9,7 @@ import (
 	"github.com/HOangAG2207/GoBe-K03/internal/route"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/redis/go-redis/v9"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -27,12 +28,17 @@ type Engine interface {
 // engine is the concrete implementation of Engine
 type engine struct {
 	// app is the Echo instance used to handle HTTP requests
-	app *echo.Echo
-	cfg *Config
+	app         *echo.Echo
+	cfg         *Config
+	redisClient *redis.Client
+}
+type EngineOpts struct {
+	Cfg         *Config
+	RedisClient *redis.Client
 }
 
 // NewEngine initializes and configures the application
-func NewEngine(cfg *Config) Engine {
+func NewEngine(opts *EngineOpts) Engine {
 
 	// ===== 1. Initialize Echo instance =====
 	app := echo.New()
@@ -53,8 +59,9 @@ func NewEngine(cfg *Config) Engine {
 
 	// ===== 3. Create engine instance =====
 	e := &engine{
-		app: app,
-		cfg: cfg,
+		app:         app,
+		cfg:         opts.Cfg,
+		redisClient: opts.RedisClient,
 	}
 
 	// ===== 4. Initialize routes =====
@@ -86,7 +93,7 @@ func (e *engine) InitRoutes() {
 	route.RegisterRoutes(e.app, route.AppConfig{
 		ServiceName: e.cfg.App.ServiceName,
 		InstanceID:  e.cfg.App.InstanceID,
-	})
+	}, e.redisClient)
 	e.app.GET("/docs/*", echoSwagger.WrapHandler)
 }
 func (e *engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {

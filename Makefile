@@ -30,12 +30,10 @@ test-code-coverage:
 	go run filter_coverage.go
 	go tool cover -html=coverage.out -o coverage.html
 
-# make mock-one name=<service-interface-name> file=<go-filename-for-mock>
-mock-service-one:
-	$(if $(name),,$(error missing name))
-	$(if $(file),,$(error missing file))
-	cd internal/service && \
-	mockery --name $(name) --filename $(file) --output ./mocks
+# make mock-one folder=<package-folder-for-mock>
+mock-one:
+	$(if $(folder),,$(error missing folder))
+	cd $(folder) && go generate ./...
 # make mock-service-all
 mock-service-all:
-	go generate ./internal/service
+	go generate ./...

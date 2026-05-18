@@ -42,7 +42,9 @@ func TestEndpoint_GeneratePassword(t *testing.T) {
 
 			// ===== init real engine (full stack) =====
 			cfg := config.Load()
-			engine := config.NewEngine(cfg)
+			engine := config.NewEngine(&config.EngineOpts{
+				Cfg: cfg,
+			})
 
 			// ===== execute request =====
 			rec := tc.setupTestHttp(engine)

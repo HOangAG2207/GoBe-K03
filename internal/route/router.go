@@ -3,6 +3,7 @@ package route
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 type AppConfig struct {
@@ -12,11 +13,13 @@ type AppConfig struct {
 }
 
 // RegisterRoutes is the central place to manage all routes
-func RegisterRoutes(e *echo.Echo, cfg AppConfig) {
+func RegisterRoutes(e *echo.Echo, cfg AppConfig, redisClient *redis.Client) {
 
 	api := e.Group("/api")
 	// ===== Register Health modules =====
 	RegisterHealthRoutes(api, cfg)
 	// ===== Register Password modules =====
 	RegisterPasswordRoutes(api)
+	// ===== Register Url modules =====
+	RegisterUrlRoutes(api, redisClient)
 }

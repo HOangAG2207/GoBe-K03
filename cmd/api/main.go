@@ -10,7 +10,9 @@ import "github.com/HOangAG2207/GoBe-K03/internal/config"
 // @BasePath /
 func main() {
 	cfg := config.Load()
-	app := config.NewEngine(cfg)
+	app := config.NewEngine(&config.EngineOpts{
+		Cfg: cfg,
+	})
 	if err := app.Start(); err != nil {
 		panic(err)
 	}

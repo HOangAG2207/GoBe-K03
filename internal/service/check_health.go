@@ -4,6 +4,7 @@ package service
 import "github.com/google/uuid"
 
 // HealthCheck defines the contract for health check business logic
+//go:generate mockery --name HealthCheck --filename health_check_mock.go --output ./mocks
 type HealthCheck interface {
 	CheckHealth() HealthCheckResponse
 }
