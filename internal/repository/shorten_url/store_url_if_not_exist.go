@@ -8,18 +8,18 @@ import (
 func (s *urlRepository) StoreURLIfNotExists(
 	ctx context.Context,
 	code, url string,
-	exp int,
+	exp time.Duration,
 ) (bool, error) {
 
 	if exp <= 0 {
-		exp = 60 // default fallback
+		exp = 60 * time.Second
 	}
 
 	ok, err := s.redisClient.SetNX(
 		ctx,
 		code,
 		url,
-		time.Duration(exp)*time.Second,
+		exp,
 	).Result()
 
 	if err != nil {

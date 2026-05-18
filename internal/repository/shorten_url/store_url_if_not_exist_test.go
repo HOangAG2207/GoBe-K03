@@ -81,7 +81,12 @@ func TestRepository_StoreURLIfNotExists(t *testing.T) {
 			redisClient := tc.setupMock(ctx)
 			repo := NewUrlRepository(redisClient)
 
-			result, err := repo.StoreURLIfNotExists(ctx, tc.code, tc.url, tc.expireIn)
+			result, err := repo.StoreURLIfNotExists(
+				ctx,
+				tc.code,
+				tc.url,
+				time.Duration(tc.expireIn)*time.Second,
+			)
 			assert.Equal(t, tc.expectedResult, result)
 			assert.Equal(t, tc.expectedError, err)
 		})
