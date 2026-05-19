@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/HOangAG2207/GoBe-K03/internal/handler"
-	"github.com/HOangAG2207/GoBe-K03/internal/service"
+	"github.com/HOangAG2207/GoBe-K03/internal/app/password/handler"
+	"github.com/HOangAG2207/GoBe-K03/internal/app/password/service"
 	"github.com/labstack/echo/v4"
 )
 

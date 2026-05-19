@@ -102,7 +102,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/shorten_url_handler.urlRequest"
+                            "$ref": "#/definitions/handler.urlRequest"
                         }
                     }
                 ],
@@ -110,19 +110,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/shorten_url_handler.urlResponse"
+                            "$ref": "#/definitions/handler.urlResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/shorten_url_handler.urlResponse"
+                            "$ref": "#/definitions/handler.urlResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/shorten_url_handler.urlResponse"
+                            "$ref": "#/definitions/handler.urlResponse"
                         }
                     }
                 }
@@ -146,24 +146,7 @@ const docTemplate = `{
                 }
             }
         },
-        "service.HealthCheckResponse": {
-            "type": "object",
-            "properties": {
-                "instance_id": {
-                    "description": "unique instance identifier",
-                    "type": "string"
-                },
-                "message": {
-                    "description": "status message (e.g., \"OK\")",
-                    "type": "string"
-                },
-                "service_name": {
-                    "description": "name of the service",
-                    "type": "string"
-                }
-            }
-        },
-        "shorten_url_handler.urlRequest": {
+        "handler.urlRequest": {
             "type": "object",
             "required": [
                 "exp",
@@ -179,13 +162,30 @@ const docTemplate = `{
                 }
             }
         },
-        "shorten_url_handler.urlResponse": {
+        "handler.urlResponse": {
             "type": "object",
             "properties": {
                 "code": {
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "instance_id": {
+                    "description": "unique instance identifier",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "status message (e.g., \"OK\")",
+                    "type": "string"
+                },
+                "service_name": {
+                    "description": "name of the service",
                     "type": "string"
                 }
             }

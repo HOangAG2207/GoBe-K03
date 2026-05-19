@@ -42,7 +42,7 @@ func NewCodeGenerator() CodeGenerator {
 //   - string: The generated code
 //   - error: An error if random number generation fails, nil otherwise
 //
-// go:generate mockery --name CodeGenerator --filename code_mock.go --output ./mocks
+// go:generate mockery --name CodeGenerator --file=name code_mock.go --output ./mocks
 func (r *randomCodeGenerator) GenerateCode(length int) (string, error) {
 	var strBuilder bytes.Buffer
 
