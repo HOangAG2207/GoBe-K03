@@ -4,6 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/HOangAG2207/GoBe-K03/internal/api"
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,13 +14,13 @@ func TestEndpoint_GeneratePassword(t *testing.T) {
 
 	testCases := []struct {
 		name                 string
-		setupTestHttp        func(e config.Engine) *httptest.ResponseRecorder
+		setupTestHttp        func(e api.Engine) *httptest.ResponseRecorder
 		expectedStatusCode   int
 		expectedResponseBody string
 	}{
 		{
 			name: "success generate password",
-			setupTestHttp: func(e config.Engine) *httptest.ResponseRecorder {
+			setupTestHttp: func(e api.Engine) *httptest.ResponseRecorder {
 
 				// ===== create request =====
 				req := httptest.NewRequest("GET", "/api/gen-password", nil)
@@ -42,7 +43,7 @@ func TestEndpoint_GeneratePassword(t *testing.T) {
 
 			// ===== init real engine (full stack) =====
 			cfg := config.Load()
-			engine := config.NewEngine(&config.EngineOpts{
+			engine := api.NewEngine(&api.EngineOpts{
 				Cfg: cfg,
 			})
 

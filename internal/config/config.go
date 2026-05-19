@@ -27,7 +27,6 @@ type RedisConfig struct {
 	Port     int    `mapstructure:"port"`
 	Password string `mapstructure:"password"`
 	DB       int    `mapstructure:"db"`
-	Prefix   string `mapstructure:"prefix"`
 }
 
 // ===== Load config =====

@@ -16,10 +16,13 @@ type AppConfig struct {
 func RegisterRoutes(e *echo.Echo, cfg AppConfig, redisClient *redis.Client) {
 
 	api := e.Group("/api")
-	// ===== Register Health modules =====
-	RegisterHealthRoutes(api, cfg)
+
 	// ===== Register Password modules =====
 	RegisterPasswordRoutes(api)
+
+	// ===== Register Health modules =====
+	RegisterHealthRoutes(api, cfg)
+
 	// ===== Register Url modules =====
 	RegisterUrlRoutes(api, redisClient)
 }

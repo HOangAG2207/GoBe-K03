@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/HOangAG2207/GoBe-K03/internal/config"
-	shorten_url_repository "github.com/HOangAG2207/GoBe-K03/internal/repository/shorten_url"
-
-	shorten_url_service "github.com/HOangAG2207/GoBe-K03/internal/service/shorten_url"
+	"github.com/HOangAG2207/GoBe-K03/internal/api"
+	url_repository "github.com/HOangAG2207/GoBe-K03/internal/app/url/repository"
+	url_service "github.com/HOangAG2207/GoBe-K03/internal/app/url/service"
 	"github.com/HOangAG2207/GoBe-K03/internal/utils"
 	redisPkg "github.com/HOangAG2207/GoBe-K03/pkg/redis"
 )
@@ -17,7 +16,7 @@ func main() {
 	ctx := context.Background()
 
 	// ===== CONFIG =====
-	cfg := config.Load()
+	cfg := api.Load()
 
 	// ===== REDIS =====
 	rdb, err := redisPkg.NewRedisClient(redisPkg.Config{
@@ -37,10 +36,10 @@ func main() {
 	defer rdb.Close()
 
 	// ===== REPOSITORY =====
-	urlRepo := shorten_url_repository.NewUrlRepository(rdb)
+	urlRepo := url_repository.NewUrlRepository(rdb)
 
 	// ===== SERVICE =====
-	urlService := shorten_url_service.NewUrlService(
+	urlService := url_service.NewUrlService(
 		urlRepo,
 		utils.NewCodeGenerator(),
 	)

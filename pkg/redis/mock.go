@@ -1,4 +1,4 @@
-package redis
+package pkg_redis
 
 import (
 	"testing"

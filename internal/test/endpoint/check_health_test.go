@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/HOangAG2207/GoBe-K03/internal/api"
 	"github.com/HOangAG2207/GoBe-K03/internal/config"
 	"github.com/stretchr/testify/assert"
 )
@@ -26,7 +27,7 @@ func TestEndpoint_CheckHealth(t *testing.T) {
 		name string
 
 		// setupTestHTTP executes a real HTTP request against the server
-		setupTestHTTP func(server config.Engine) *httptest.ResponseRecorder
+		setupTestHTTP func(server api.Engine) *httptest.ResponseRecorder
 
 		expectedStatusCode int
 		expectedMessage    string
@@ -36,7 +37,7 @@ func TestEndpoint_CheckHealth(t *testing.T) {
 			name: "success check health",
 
 			// Create and execute HTTP request through real server stack
-			setupTestHTTP: func(server config.Engine) *httptest.ResponseRecorder {
+			setupTestHTTP: func(server api.Engine) *httptest.ResponseRecorder {
 
 				// Create HTTP request
 				req := httptest.NewRequest("GET", "/api/health-check", nil)
@@ -66,7 +67,7 @@ func TestEndpoint_CheckHealth(t *testing.T) {
 
 			// Initialize full application engine (integration test level)
 			cfg := config.Load()
-			engine := config.NewEngine(&config.EngineOpts{
+			engine := api.NewEngine(&api.EngineOpts{
 				Cfg: cfg,
 			})
 
